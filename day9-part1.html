@@ -1,0 +1,98 @@
+<script type="text/javascript">
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+};
+
+var getInstruction = function(string){
+
+    var instruction = "";
+
+    var index = 0;
+
+    var instructionFound = false
+
+    while(!instructionFound){
+
+        var char = string[index];
+
+        if(char === ')'){
+            instructionFound = true;
+            index++;
+        }else{
+            instruction += char;
+            index ++;
+        }
+
+    }
+
+    return instruction;
+
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day9input.txt", function(file){
+
+    var input = file.replace(/\s/g,'');
+    //var input = "ADVENT A(1x5)BC (3x3)XYZ A(2x2)BCD(2x2)EFG (6x1)(1x3)A X(8x2)(3x3)ABCY".replace(/\s/g,'');
+
+    var decompressedString = "";
+
+    var index = 0;
+
+    while(index < input.length){
+
+        var char = input[index];
+
+        if(char !== '('){
+            decompressedString += char;
+            index ++;
+        }
+        else if(char === '('){
+
+            index ++;
+
+            var instruction = getInstruction(input.substring(index ,input.length));
+
+            index += (instruction.length + 1);
+
+            var r = instruction.match(/\d+/g);
+
+            var lngth = Number(r[0]);
+            var times = Number(r[1]);
+
+            var stringToRepeat = input.substring(index,index + lngth);
+
+            for (var i = 0; i < times; i++) {
+               decompressedString += stringToRepeat;
+            }
+
+            //console.log(instruction);
+
+            //console.log(stringToRepeat);
+
+            index+= lngth;
+
+        }else{
+            index ++;
+        }
+    }
+
+    console.log(decompressedString.length);
+
+});
+
+</script>

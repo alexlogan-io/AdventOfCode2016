@@ -1,0 +1,84 @@
+<script type="text/javascript">
+
+  function readTextFile(file, callback)
+  {
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", file, false);
+      rawFile.onreadystatechange = function ()
+      {
+          if(rawFile.readyState === 4)
+          {
+              if(rawFile.status === 200 || rawFile.status ==+ 0)
+              {
+                  var allText = rawFile.responseText;
+                  callback(allText.toString());
+              }
+          }
+      };
+      rawFile.send(null);
+  }
+
+  readTextFile("file:///C:/Users/alexl/AdventOfCode/day1input.txt", function(file){
+
+    var north, east, degree, input;
+
+    north = 0;
+    east = 0;
+    degree = 0;
+
+    //input = ["R2", "L3"];
+    //input = ["R2","R2","R2"];
+    //input = ["R5","L5","R5","R3"];
+
+    input = file.replace(/\s/g, '').split(",");;
+
+    for(var i = 0; i < input.length; i++){
+
+      var direction = input[i][0];
+      var distance = Number(input[i].match(/\d+/g)[0]);
+      
+      if(direction == "R"){
+    		switch(degree){
+        	case 0:
+          	east += distance;
+            degree += 90;
+          	break;
+          case 90:
+            north -= distance;
+            degree += 90;
+          	break;
+          case 180:
+          	east -= distance;
+            degree += 90;
+          	break;
+          case 270:
+            north += distance;
+            degree = 0;
+          	break;
+        }
+      }else if (direction == "L"){
+      	switch(degree){
+        	case 0:
+            east -= distance;
+            degree = 270;
+            break;
+          case 90:
+            north += distance;
+            degree -= 90;
+            break;
+          case 180:
+            east += distance;
+            degree -= 90;
+            break;
+          case 270:
+            north -= distance;
+            degree -= 90;
+            break;
+        } 
+      }
+    }
+
+    alert("distance to easter bunny hq is " + (Math.abs(north + east)));
+  });
+
+</script>

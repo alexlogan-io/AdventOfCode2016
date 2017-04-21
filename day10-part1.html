@@ -1,0 +1,161 @@
+<script type="text/javascript">
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+};
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day10input.txt", function(file){
+
+    //var input = file.split('\n');
+    var input = ["value 5 goes to bot 2","bot 2 gives low to bot 1 and high to bot 0","value 3 goes to bot 1","bot 1 gives low to output 1 and high to bot 0",
+                "bot 0 gives low to output 2 and high to output 0","value 2 goes to bot 2"];
+
+    var bots = [];
+    var outputs = [];
+
+    var addBotIfValue = function(b, v){
+
+        var botfound = false;
+
+        for (each of bots){
+            if (each.botNo === b){
+                each.values.push(v);
+                botfound = true;
+            }
+        }
+
+        if(!botfound){
+            var bot = {
+                "botNo":b,
+                "values" : [v],
+                "lowOut" : "",
+                "highOut" : "" 
+            };
+
+            bots.push(bot);
+        }
+
+    };
+
+    var addBotIfBot = function(b,lOut,lVal,hOut,hVal){
+
+        var botfound = false;
+
+        for (each of bots){
+            if(each.botNo === b){
+                each.lowOut = lOut + "-" + lVal;
+                each.highOut = hOut + "-" + hVal;
+                botfound = true;
+            }
+        }
+
+        if(!botfound){
+            var bot = {
+                "botNo":b,
+                "values" : [],
+                "lowOut" : lOut + "-" + lVal,
+                "highOut" : hOut + "-" + hVal 
+            };
+
+            bots.push(bot);
+        }
+
+    };
+
+    for (item of input){
+        var type = item.match(/^\w+/g)[0];
+
+        if(type === 'value'){
+
+            var wrds = item.match(/\w+/g);
+
+            var val = Number(wrds[1]);
+            var botNo = Number(wrds[5]);
+
+            addBotIfValue(botNo, val);
+
+        }else if(type === 'bot'){
+
+            var wrds = item.match(/\w+/g);
+
+            var botNo = Number(wrds[1]);
+
+            var lowOutputOrBot = wrds[5];
+            var lowVal = wrds[6];
+
+            var highOutputOrBot = wrds[10];
+            var highVal = wrds[11];
+
+            addBotIfBot(botNo, lowOutputOrBot,lowVal,highOutputOrBot,highVal);
+
+        }else{
+            console.log(item);
+        }
+    }
+
+    for (bot of bots){
+        var lowInstruction = bot.lowOut.split('-')[0];
+        var lowVal = Number(bot.lowOut.split('-')[1]);
+
+        if(lowInstruction === 'output'){
+
+            var outputFound = false;
+
+            for(each of outputs){
+                if(each.id === lowVal){
+                    var min = Math.min(...bot.values);
+                    each.values.push(min);
+                    bot.values.splice(bot.values.indexOf(min),1);
+
+                    outputFound = true; 
+                }
+            }
+
+            if(!outputFound){
+
+                var min = Math.min(...bot.values);
+                bot.values.splice(bot.values.indexOf(min),1);
+
+                var output = {
+                    "id": lowVal,
+                    "values": [min]
+                };
+
+                outputs.push(output);
+            }
+
+
+        }else if(lowInstruction === 'bot'){
+
+            for(each of bots){
+                if(each.botNo === lowVal){
+                    var min = Math.min(...bot.values);
+                    each.values.push(min);
+                    bot.values.splice(bot.values.indexOf(min),1);
+                }
+            }
+
+        }else{
+            console.log(bot);
+        }
+    }
+
+    console.log(bots);
+
+});
+
+</script>

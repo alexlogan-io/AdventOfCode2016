@@ -1,0 +1,78 @@
+<script type="text/javascript">
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+};
+
+var checkAbba = function(string){
+    var ab = string[0] + string[1];
+    var ba = string[1] + string[0];
+    var comp = string[2] + string[3];
+    if(ba === comp && string[0] !== string[1]){
+        return true;
+    }else{
+        return false;
+    }
+};
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day7input.txt", function(file){
+
+    var input, totalTls;
+
+    totalTls = 0;
+
+    //input = ["abba[mnop]qrst","abcd[bddb]xyyx","aaaa[qwer]tyui","ioxxoj[asdfgh]zxcvbn"];
+    input = file.split('\n');
+
+    for (var i = 0; i < input.length; i++) {
+
+        var validBrackets = true;
+        var validTls = false;
+
+        item = input[i];
+
+        var brackets = item.match(/\[+\w+\]/g).join('').replace(/\]\[/g, ',').replace(/\[/g,'').replace(/\]/g,'').split(',');
+
+        for (var n = 0; n < brackets.length; n++) {
+            for (var m = 0; m < brackets[n].length - 3; m++) {
+                if(checkAbba(brackets[n].substring(m,m + 4))){
+                    validBrackets = false;
+                }
+            }
+        };
+
+        if(validBrackets){
+            var stripped = item.replace(/\[+\w+\]/g, ',').split(',');
+            for (var x = 0; x < stripped.length; x++) {
+                for (var y = 0; y < stripped[x].length - 3; y++) {
+                    if(checkAbba(stripped[x].substring(y,y + 4))){
+                        validTls = true;
+                    }
+                }
+            }
+        }
+
+        if(validTls){
+            totalTls ++;
+        }
+    }
+
+    alert(totalTls);
+
+});
+
+</script>

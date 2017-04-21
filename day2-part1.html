@@ -1,0 +1,72 @@
+<script>
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day2input.txt", function(file){
+
+	var pad, posY, posX, input, code;
+
+	pad = [[1,2,3],[4,5,6],[7,8,9]];
+
+	posX = 1;
+	posY = 1;
+
+	code = [];
+
+	//input = ["ULL","RRDDD","LURDL","UUUUD"];
+
+	input = file.split('\n');
+
+	var doMove = function(x, y, direction){
+		switch(direction){
+			case "U":
+				if(y > 0){
+					posY -= 1;
+				}
+				break;
+			case "D":
+				if(y < 2){
+					posY += 1;
+				}
+				break;
+			case "L":
+				if(x > 0){
+					posX -= 1;
+				}
+				break;
+			case "R":
+				if(x < 2){
+					posX += 1
+				}
+				break;
+		};
+	};
+
+	for (var i = 0; i < input.length; i++) {
+		for (var j = 0; j < input[i].length; j++) {
+			var direction = input[i][j];
+			doMove(posX,posY,direction);
+		}
+		code.push(pad[posY][posX]);
+	}
+
+	console.log(code);
+});
+
+</script>

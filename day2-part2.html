@@ -1,0 +1,140 @@
+<script>
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day2input.txt", function(file){
+
+	var pad, posY, posX, input, code;
+
+	pad = [[0,0,1,0,0],[0,2,3,4,0],[5,6,7,8,9],[0,'A','B','C',0],[0,0,'D',0,0]];
+
+	posX = 0;
+	posY = 2;
+
+	code = [];
+
+	//input = ["ULL","RRDDD","LURDL","UUUUD"];
+	input = file.split('\n');
+
+	var doMove = function(x, y, direction){
+		switch(direction){
+			case "U":
+				switch(y){
+					case 0:
+						break;
+					case 1:
+						if(x !== 1 && x !== 3){
+							posY -= 1;
+						}
+						break;
+					case 2:
+						if(x !== 0 && x !== 4){
+							posY -= 1;
+						}
+						break;
+					case 3:
+						posY -= 1
+						break;
+					case 4:
+						posY -= 1
+						break;
+				};
+				break;
+			case "D":
+				switch(y){
+					case 0:
+						posY += 1;
+						break;
+					case 1:
+						posY += 1;
+						break;
+					case 2:
+						if(x !== 0 && x !== 4){
+							posY += 1;
+						}
+						break;
+					case 3:
+						if(x !== 1 && x !== 3){
+							posY += 1;
+						}
+						break;
+					case 4:
+						break;
+				};
+				break;
+			case "L":
+				switch(x){
+					case 0:
+						break;
+					case 1:
+						if(y !== 1 && y !== 3){
+							posX -= 1;
+						}
+						break;
+					case 2:
+						if(y !== 0 && y !== 4){
+							posX -= 1;
+						}
+						break;
+					case 3:
+						posX -= 1
+						break;
+					case 4:
+						posX -= 1
+						break;
+				};
+				break;
+			case "R":
+				switch(x){
+					case 0:
+						posX += 1;
+						break;
+					case 1:
+						posX += 1;
+						break;
+					case 2:
+						if(y !== 0 && y !== 4){
+							posX += 1;
+						}
+						break;
+					case 3:
+						if(y !== 1 && y !== 3){
+							posX += 1;
+						}
+						break;
+					case 4:
+						break;
+				};
+				break;
+		};
+	};
+
+	for (var i = 0; i < input.length; i++) {
+		for (var j = 0; j < input[i].length; j++) {
+			var direction = input[i][j];
+			doMove(posX,posY,direction);
+		}
+
+		code.push(pad[posY][posX]);
+	}
+
+	console.log(code);
+});
+
+</script>

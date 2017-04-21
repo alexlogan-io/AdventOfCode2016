@@ -1,0 +1,138 @@
+<script type="text/javascript">
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+};
+
+var getInstruction = function(string){
+    return string.match(/^\w+/g)[0];
+}
+
+var getDimensions = function(string){
+    var dim = string.match(/\w+/g)[1].split('x');
+    return {'x':Number(dim[0]), 'y':Number(dim[1])};
+}
+
+var getRotation = function(string){
+    var dir = string.match(/\w+/g);
+    return {'dir':dir[2], 'val':Number(dir[3]), 'dist': Number(dir[5])};
+}
+
+var logScreen = function(screen){
+    rStr = "";
+    for(var q of screen){
+        for(var u of q){
+            rStr += u;
+        }
+        rStr += '\n';
+    }
+
+    console.log(rStr);
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day8input.txt", function(file){
+
+    var input, upperX, upperY, rect, screen, activeLeds;
+
+    //input = ["rect 3x2","rotate column x=1 by 1","rotate row y=0 by 4","rotate column x=1 by 1","rect 3x2","rotate column x=1 by 1","rotate row y=0 by 4","rotate column x=1 by 1"];
+    input = file.split('\n');
+
+    //upperX = 6;
+    //upperY = 2;
+
+    upperX = 49;
+    upperY = 5;
+
+    rect = [];
+
+    for (var item of input){
+
+        var instruction = getInstruction(item);
+
+        if(instruction === 'rect'){
+
+            var dim = getDimensions(item);
+
+            for (var n = 0; n < dim.x; n++) {
+                for(var m = 0; m < dim.y; m++){
+                    rect.push({'x':n, 'y': m});
+                }
+            }
+
+        }else if(instruction === 'rotate'){
+
+            var rot = getRotation(item);
+            
+            if(rot.dir === 'x'){
+
+                for (var r of rect){
+                    if(r.x === rot.val){
+                        r.y += rot.dist;
+                        if(r.y > upperY){
+                            tmp = r.y - (upperY + 1);
+                            r.y = tmp;
+                        }
+                    }
+                }
+
+            }else if(rot.dir === 'y'){
+
+                for (var r of rect){
+                    if(r.y === rot.val){
+                        r.x += rot.dist;
+                        if(r.x > upperX){
+                            tmp = r.x - (upperX + 1);
+                            r.x = tmp;
+                        }
+                    }
+                }
+
+            }else{
+                console.log('fail');
+            }            
+        }
+        else{
+            console.log('fail');
+        }
+    }
+
+    screen = [];
+
+    for (var i = 0; i < upperY + 1; i++) {
+        row = [];
+        for (var j = 0; j < upperX + 1; j++) {
+            row.push(" ");
+        }
+        screen.push(row);
+    }
+
+    activeLeds = 0;
+
+    for (var pixel of rect){
+        if(screen[pixel.y][pixel.x] === " "){
+            screen[pixel.y][pixel.x] = "#";
+            activeLeds ++;
+        }
+    }
+
+    console.log(activeLeds);
+
+    logScreen(screen);
+
+});
+
+</script>

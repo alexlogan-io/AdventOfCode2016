@@ -1,0 +1,55 @@
+<script type="text/javascript">
+	
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day3input.txt", function(file){
+
+
+	var input, totalPos;
+
+	//input = "5 10 25 12 12 6";
+
+	//input = [101,301,501,102,302,502,103,303,503,201,401,601,202,402,602,203,403,603];
+
+	input = file.replace(/\s+/g,',').split(',').map(function(x){
+		return parseInt(x);
+	});
+
+	totalPos = 0;
+
+	for (var i = 0; i < input.length; i+=9) {
+		for (var j = 0; j < 3; j++) {
+			var a = input[i + j];
+			var b= input[i + j + 3];
+			var c= input[i + j + 6];
+
+			var d = a + b;
+			var e = a + c;
+			var f = b + c;
+
+			if(d > c && e > b && f > a){
+				totalPos += 1;
+			}
+		}
+	}
+
+	alert(totalPos);
+});
+
+</script>

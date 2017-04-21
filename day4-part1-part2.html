@@ -1,0 +1,142 @@
+<script type="text/javascript">
+
+
+//input = ["aaaaa-bbb-z-y-x-123[abxyz]","a-b-c-d-e-f-g-h-987[abcde]","not-a-real-room-404[oarel]","totally-real-room-200[decoy]"];
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day4input.txt", function(file){
+
+	var input, sum, rotatedList;
+
+	input = file.split('\n');
+
+	//input = ["qzmt-zixmtkozy-ivhz-343"];
+
+	sum = 0;
+
+	rotatedList = [];
+
+	for (var i = 0; i < input.length; i++) {
+		
+		var letters = [];
+		var count = [];
+
+		var item = input[i];
+
+		item = item.replace(/-/g,'').replace(/\s/g,'');
+
+		var lettersFinished = false;
+		var j=0;
+
+		while (!lettersFinished){
+			var letter = item[j];
+
+			if(letter.match(/\d/g)){
+				lettersFinished = true;
+				break;
+			}
+
+			if(letters.indexOf(letter) === -1){
+				letters.push(letter);
+				count.push(1);
+			}else if(letters.indexOf(letter) > -1){
+				count[letters.indexOf(letter)] ++;
+			}else{
+				j++;
+				break;
+			}
+
+			j++;
+		}
+
+		var checksum = item.substring(item.length - 6,item.length - 1);
+
+		var list = [];
+
+		for (var n = 0; n < letters.length; n++) {
+			list.push({'letter':letters[n], 'count':count[n]});
+		}
+
+		list.sort(function(a,b){
+			if(a.count < b.count){
+				return 1;
+			}
+			else if(a.count == b.count){
+				if(a.letter < b.letter){
+					return -1;
+				}else{
+					return 1;
+				}
+			}else{
+				return -1;
+			}
+		});
+
+		var s = "";
+		var itemId;
+
+		for (var m = 0; m < 5; m++) {
+			s += list[m].letter;
+		}
+
+		if(s === checksum){
+			var id = "";
+			var r = item.match(/\d/g);
+			for (var p = 0; p < r.length; p++) {
+				id += r[p];
+			}
+
+			itemId = Number(id);
+
+			sum += itemId;
+		}
+
+		var alpha = 'abcdefghijklmnopqrstuvwxyz';
+
+		var newItem = item.split('');
+
+		for (var k = 0; k < item.length - 3; k++) {
+			for (var lol = 0; lol < itemId % 26; lol++) {
+				if(newItem[k] === "z"){
+					newItem[k] = "a";
+				}else{
+					newItem[k] = alpha[alpha.indexOf(newItem[k]) + 1];
+				}
+			}
+		}
+
+		rotatedList.push(newItem.join(''));
+
+	}
+
+	for (var x = 0; x < rotatedList.length; x++) {
+		if(rotatedList[x].includes('northpole')){
+			console.log(rotatedList[x]);
+			console.log(input[x]);
+		}
+	}
+
+	//console.log(rotatedList);
+
+	alert(sum);
+
+});
+
+</script>

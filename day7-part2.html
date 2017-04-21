@@ -1,0 +1,84 @@
+<script type="text/javascript">
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+};
+
+var checkAba = function(string){
+    var a = string[0];
+    var b = string[1];
+    var a2 = string[2];
+    if(a === a2 && a !== b){
+        return true;
+    }else{
+        return false;
+    }
+};
+
+var getBab = function(aba){
+    return aba[1] + aba[0] + aba[1]; 
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day7input.txt", function(file){
+
+    var input, totalSSL;
+
+    totalSSL = 0;
+
+    //input = ["aba[bab]xyz","xyx[xyx]xyx","aaa[kek]eke","zazbz[bzb]cdb"];
+    input = file.split('\n');
+
+    for (var i = 0; i < input.length; i++) {
+
+        var item = input[i];
+
+        var validSSL = false;
+
+        var corrBab = [];
+
+        var stripped = item.replace(/\[+\w+\]/g, ',').split(',');
+
+        for (var x = 0; x < stripped.length; x++) {
+            for (var y = 0; y < stripped[x].length - 2; y++) {
+                var str = stripped[x].substring(y,y + 3);
+                if(checkAba(str)){
+                    corrBab.push(getBab(str));
+                }
+            }
+        }
+
+        var brackets = item.match(/\[+\w+\]/g).join('').replace(/\]\[/g, ',').replace(/\[/g,'').replace(/\]/g,'').split(',');
+
+        for (var n = 0; n < brackets.length; n++) {
+            for (var m = 0; m < corrBab.length; m++) {
+                if(brackets[n].includes(corrBab[m])){
+                    validSSL = true;
+                }
+            }
+        }
+
+        if(validSSL){
+            totalSSL ++;
+        }
+
+    }
+
+    alert(totalSSL);
+
+});
+
+</script>

@@ -1,0 +1,135 @@
+<script type="text/javascript">
+
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status ==+ 0)
+            {
+                var allText = rawFile.responseText;
+                callback(allText.toString());
+            }
+        }
+    };
+    rawFile.send(null);
+};
+
+var getInstruction = function(string){
+
+    var instruction = "";
+
+    var index = 0;
+
+    var instructionFound = false;
+
+    while(!instructionFound){
+
+        var char = string[index];
+
+        if(char === ')'){
+            instructionFound = true;
+            index++;
+        }else{
+            instruction += char;
+            index ++;
+        }
+
+    }
+
+    return instruction;
+
+}
+
+var decompressInput = function(input){
+    var decompressedString = "";
+
+    var index = 0;
+
+    while(index < input.length){
+
+        var char = input[index];
+
+        if(char !== '('){
+            decompressedString += char;
+            index ++;
+        }
+        else if(char === '('){
+
+            index ++;
+
+            var instruction = getInstruction(input.substring(index ,input.length));
+
+            index += (instruction.length + 1);
+
+            var r = instruction.match(/\d+/g);
+
+            var lngth = Number(r[0]);
+            var times = Number(r[1]);
+
+            var stringToRepeat = input.substring(index,index + lngth);
+
+            for (var i = 0; i < times; i++) {
+               decompressedString += stringToRepeat;
+            }
+
+            //console.log(instruction);
+            //console.log(stringToRepeat);
+
+            index+= lngth;
+
+        }else{
+            index ++;
+        }        
+    }
+
+    return decompressedString;
+
+}
+
+readTextFile("file:///C:/Users/alexl/AdventOfCode/day9input.txt", function(file){
+
+    //var input = file.replace(/\s/g,'').split('');
+    //var input = "ADVENT A(1x5)BC (3x3)XYZ A(2x2)BCD(2x2)EFG (6x1)(1x3)A X(8x2)(3x3)ABCY".replace(/\s/g,'');
+    var input = "(3x3)XYZ X(8x2)(3x3)ABCY (27x12)(20x12)(13x14)(7x10)(1x12)A (25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN".replace(/\s/g,'').split('');
+    //var input = "XYZXYZXYZ X(3x3)ABC(3x3)ABCY (20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A(20x12)(13x14)(7x10)(1x12)A (3x3)ABC(2x3)XY(5x2)PQRST(3x3)ABC(2x3)XY(5x2)PQRST(3x3)ABC(2x3)XY(5x2)PQRSTX(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN(3x2)TWO(5x7)SEVEN"
+
+    var explode = function(chars, n){
+
+        var count = 0;
+
+        for (var i = 0; i < chars.length; i++) {
+            
+            if(chars[i] === '('){
+                var marker = getInstruction(input.slice(i + 1 ,i + 10).join(''));
+                console.log(marker);
+                var arr = marker.split('x');
+                var nchars = Number(arr[0]);
+                console.log(nchars);
+                var skip = i + marker.length + 2;
+                console.log(skip);
+                var inner = chars.slice(skip,nchars);
+                console.log(chars);
+                console.log(inner);
+                count += explode(chars.slice(skip,nchars),arr[2]);
+                i = skip + nchars - 1;
+            }else{
+                count ++;
+            }
+        }
+
+        return count * n;
+    }
+
+    var testAnswer = 9 + 20 + 241920 + 445;
+
+    console.log(testAnswer); 
+
+    console.log(explode(input,1));
+
+});
+
+</script>

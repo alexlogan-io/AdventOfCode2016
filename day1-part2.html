@@ -1,0 +1,143 @@
+<script type="text/javascript">
+
+  function readTextFile(file, callback)
+  {
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", file, false);
+      rawFile.onreadystatechange = function ()
+      {
+          if(rawFile.readyState === 4)
+          {
+              if(rawFile.status === 200 || rawFile.status ==+ 0)
+              {
+                  var allText = rawFile.responseText;
+                  callback(allText.toString());
+              }
+          }
+      };
+      rawFile.send(null);
+  }
+
+  readTextFile("file:///C:/Users/alexl/AdventOfCode/day1input.txt", function(file){
+
+    var north, east, degree, input, locationArray, dupeFound;
+
+    north = 0;
+    east = 0;
+    degree = 0;
+    locationArray = [];
+    dupeFound = false;
+
+    var getLocationString = function(north, east){
+      return "" + east + ", " + north;
+    };
+
+    var checkLocation = function(north, east){
+      if(locationArray.indexOf(getLocationString(north, east)) > -1){
+        dupeFound = true;
+        alert("actual easter bunny hq is " + Math.abs(north + east) + " blocks away.");
+      }
+    };
+
+    var addLocations = function(oldDistance, newDistance, direction){
+      if(!dupeFound){
+
+        var diff = (newDistance - oldDistance);
+
+        if(diff > 0){
+          for (var i = newDistance - 1; i >= oldDistance + 1; i--) {
+            if(direction === 'north'){
+              checkLocation(i, east);
+              locationArray.push(getLocationString(i,east));
+            }else{
+              checkLocation(north, i);
+              locationArray.push(getLocationString(north,i));
+            }
+          }
+        }else if(diff < 0){
+          for (var i = newDistance + 1; i <= oldDistance - 1; i++) {
+            if(direction === 'north'){
+              checkLocation(i, east);
+              locationArray.push(getLocationString(i,east));
+            }else{
+              checkLocation(north, i);
+              locationArray.push(getLocationString(north,i));
+            }
+          }
+        }
+      }
+    };
+
+    //input = ["R2", "L3"];
+    //input = ["R2","R2","R2"];
+    //input = ["R5","L5","R5","R3"];
+
+    input = file.replace(/\s/g, '').split(",");
+
+    for(var i = 0; i < input.length; i++){
+
+      var direction = input[i][0];
+      var distance = Number(input[i].match(/\d+/g)[0]);
+      
+      if(direction == "R"){
+    		switch(degree){
+        	case 0:
+            addLocations(east, east + distance, 'east');
+          	east += distance;
+            degree += 90;
+          	break;
+          case 90:
+            addLocations(north, north - distance, 'north');
+            north -= distance;
+            degree += 90;
+          	break;
+          case 180:
+            addLocations(east, east - distance, 'east');
+          	east -= distance;
+            degree += 90;
+          	break;
+          case 270:
+            addLocations(north, north + distance, 'north');
+            north += distance;
+            degree = 0;
+          	break;
+        }
+      }else if (direction == "L"){
+      	switch(degree){
+        	case 0:
+            addLocations(east, east - distance, 'east');
+            east -= distance;
+            degree = 270;
+            break;
+          case 90:
+            addLocations(north, north + distance, 'north');
+            north += distance;
+            degree -= 90;
+            break;
+          case 180:
+            addLocations(east, east + distance, 'east');
+            east += distance;
+            degree -= 90;
+            break;
+          case 270:
+            addLocations(north, north - distance, 'north');
+            north -= distance;
+            degree -= 90;
+            break;
+        } 
+      }
+
+      if(!dupeFound){
+
+        checkLocation(north, east);
+        locationArray.push(getLocationString(north,east));
+        
+      }
+
+    }
+
+    alert("distance to easter bunny hq is " + (Math.abs(north + east)));
+
+  });
+
+</script>
